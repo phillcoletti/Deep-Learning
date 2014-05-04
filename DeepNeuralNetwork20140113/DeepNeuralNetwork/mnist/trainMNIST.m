@@ -39,11 +39,12 @@ nodes = [784 800 800 10]; % just example!
 bbdbn = randDBN( nodes, 'BBDBN' );
 nrbm = numel(bbdbn.rbm);
 
-opts.MaxIter = 1000;
+opts.MaxIter = 100;
 opts.BatchSize = 100;
 opts.Verbose = true;
 opts.StepRatio = 0.1;
 opts.object = 'CrossEntropy';
+opts.DropOutRate = .5;
 
 opts.Layer = nrbm-1;
 bbdbn = pretrainDBN(bbdbn, TrainImages, opts);
@@ -53,7 +54,3 @@ opts.Layer = 0;
 bbdbn = trainDBN(bbdbn, TrainImages, TrainLabels, opts);
 
 save('mnistbbdbn.mat', 'bbdbn' );
-
-
-
-
