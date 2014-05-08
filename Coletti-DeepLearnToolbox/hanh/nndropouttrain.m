@@ -1,5 +1,5 @@
-function [nn, L, loss]  = nntrain(nn, train_x, train_y, opts, val_x, val_y)
-%NNTRAIN trains a neural net
+function [nn, L, loss]  = nndropouttrain(nn, train_x, train_y, opts, val_x, val_y)
+%NNDROPOUTTRAIN trains a neural net
 % [nn, L] = nnff(nn, x, y, opts) trains the neural network nn with input x and
 % output y for opts.numepochs epochs, with minibatches of size
 % opts.batchsize. Returns a neural network nn with updated activations,
@@ -88,7 +88,6 @@ for i = 1 : numepochs
     
     disp(['epoch ' num2str(i) '/' num2str(opts.numepochs) '. Took ' num2str(t) ' seconds' '. Mini-batch mean squared error on training set is ' num2str(mean(L((n-numbatches):(n-1)))) str_perf]);
     nn.learningRate = nn.learningRate * nn.scaling_learningRate;
-    %  strcat(noise,'_epochs=', num2str(numepochs), '_dropout=',num2str(rates),'_inputdrop=',num2str(inputdropout),'.mat')
     
 end
 fclose(fid);
