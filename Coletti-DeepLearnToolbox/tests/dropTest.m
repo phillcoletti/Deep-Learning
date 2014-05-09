@@ -15,13 +15,13 @@ noise = 'drop';
 %testing with tanh
 activation = 'tanh_opt';
 for modelnum = modelRange;
-    createTask(job,@test_connect,5,{noise, inputDropout, dropoutRate, activation, modelnum});
+    createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, modelnum});
 end
 
 %testing with relu
 activation = 'relu';
 for modelnum = modelRange;
-    createTask(job,@test_connect,5,{noise, inputDropout, dropoutRate, activation, modelnum});
+    createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, modelnum});
 end
 
 %submit it and check status

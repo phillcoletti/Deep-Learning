@@ -1,4 +1,4 @@
-function [nn, L, loss]  = nntrain(nn, train_x, train_y, modelnum, opts, val_x, val_y)
+function [nn, L, loss]  = nntrain_connect(nn, train_x, train_y, modelnum, opts, val_x, val_y)
 %NNTRAIN trains a neural net
 % [nn, L] = nnff(nn, x, y, opts) trains the neural network nn with input x and
 % output y for opts.numepochs epochs, with minibatches of size

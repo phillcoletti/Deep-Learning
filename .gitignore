@@ -26,3 +26,5 @@ slprj/
 
 #Ignore large network training results
 *epochs*
+*Job*
+*\#*
