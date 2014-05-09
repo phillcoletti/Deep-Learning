@@ -99,11 +99,11 @@ for i = 1 : numepochs
         nnupdatefigures(nn, fhandle, loss, opts, i);
     end
 
-    results_str = ['epoch ' num2str(i) '/' num2str(numepochs) '. Took ' num2str(t) 's' '. Mini-batch MSE ' num2str(mean(L((n-numbatches):(n-1)))) str_perf];
+    results_str = ['epoch ' num2str(i) '/' num2str(numepochs) '. Took ' num2str(t) 's' '. Mini-batch MSE ' num2str(mean(L((n-numbatches):(n-1)))) str_perf '\n'];
     disp(results_str);
 
     %save intermediate neural network
-    if ~mod(i, 1) 
+    if ~mod(i, 200) 
         varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '_epochs=', num2str(i), '.mat');
         save(varname,'nn');
     end

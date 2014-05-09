@@ -11,18 +11,19 @@ modelRange = 1:5;
 inputCorruptFraction = 0.2;
 dropoutRate = 0.5;
 noise = 'random';
+numepochs = 3000;
 
 %testing with tanh
 activation = 'tanh_opt';
 for modelnum = modelRange;
-    createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, modelnum});
+    createTask(job,@test_dropout,5,{noise, inputCorruptFraction, dropoutRate, activation, numepochs, modelnum});
 end
 
 %testing with relu
-activation = 'relu';
-for modelnum = modelRange;
-    createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, modelnum});
-end
+% activation = 'relu';
+% for modelnum = modelRange;
+%     createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, modelnum});
+% end
 
 %submit it and check status
 job.submit()
