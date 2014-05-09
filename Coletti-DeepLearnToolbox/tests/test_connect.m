@@ -36,5 +36,5 @@ nn.activation_function = activation;
 
 %save final neural network
 numepochs = sum(nn.epochSchedule);
-varname = strcat('../results/', noise, '_', nn.activation_function, '_dropout=',num2str(dropoutRate),'_inputCorrupt=',num2str(inputCorrupt), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
+varname = strcat('../results/', 'connect_', noise, '_', nn.activation_function, '_dropout=',num2str(dropoutRate),'_inputCorrupt=',num2str(inputCorrupt), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
 save(varname,'nn','L','er','bad', 'loss');

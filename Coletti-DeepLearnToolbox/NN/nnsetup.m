@@ -28,7 +28,7 @@ function nn = nnsetup(architecture)
     
     %% DropConnect training setup (See Regularization of Neural Networks using DropConnect)
     nn.connectTraining                  = 0;                %  DropConnect training flag
-    nn.epochSchedule                    = [600,400,400,20,20,20,20];    %  size of each epoch segment (for different learning rates)
+    nn.epochSchedule                    = [800,600,400,100,50,20,20];    %  size of each epoch segment (for different learning rates)
 %    nn.epochSchedule                    = [1,1,1,1,1,1,1];    %  toy example for testing
     nn.learningRateMultiplier           = [1,.5,.1,.05,.01,.005, .001];    % learning rate multiplier
     nn.sigma                            = 0.25;             % Gaussian distortion

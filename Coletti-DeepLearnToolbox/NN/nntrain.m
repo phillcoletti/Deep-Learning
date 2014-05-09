@@ -25,6 +25,12 @@ if isfield(opts,'plot') && opts.plot == 1
     fhandle = figure();
 end
 
+if nn.connectTraining
+    trainingType = 'connect';
+else
+    trainingType = 'hinton';
+end
+
 % Write errors to file in case people decide to be mean and shut me down
 fid = fopen(strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '.txt'),'wt');
 
@@ -104,7 +110,7 @@ for i = 1 : numepochs
 
     %save intermediate neural network
     if ~mod(i, 200) 
-        varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '_epochs=', num2str(i), '.mat');
+        varname = strcat('../results/', trainingType, '_', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '_epochs=', num2str(i), '.mat');
         save(varname,'nn');
     end
 

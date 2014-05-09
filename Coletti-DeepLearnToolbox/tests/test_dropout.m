@@ -36,5 +36,5 @@ opts.numepochs =  numepochs;                %  Number of full sweeps through dat
 [er, bad] = nntest(nn, test_x, test_y);
 
 %save final neural network
-varname = strcat('../results/', noise, '_', nn.activation_function, '_dropout=',num2str(dropoutRate),'_inputCorrupt=',num2str(inputCorrupt), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
+varname = strcat('../results/', 'hinton_', noise, '_', nn.activation_function, '_dropout=',num2str(dropoutRate),'_inputCorrupt=',num2str(inputCorrupt), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
 save(varname,'nn','L','er','bad', 'loss');
