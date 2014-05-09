@@ -1,4 +1,4 @@
-function [nn, L, loss, er, bad] = test_dropout(noise,inputdropout,rates,numepochs,modelnum)
+function [nn, L, loss, er, bad] = test_dropout(noise,inputCorrupt,dropoutRate,activation, numepochs, modelnum)
 addpath('../data');
 addpath('../util/');
 addpath('../NN/');
@@ -25,17 +25,16 @@ nn.scaling_learningRate = 0.998;
 opts.batchsize = 100;
 
 nn.noise = noise;
-nn.dropoutInput = inputdropout;
-nn.dropoutFraction = rates;
+opts.sigma = .25;
+nn.inputCorruptFraction = inputCorrupt;
+nn.dropoutFraction = dropoutRate;
+nn.activation_function = activation;
 opts.numepochs =  numepochs;                %  Number of full sweeps through data
 
-%filename = strcat('../results/', noise, '_dropout=',num2str(rates),'_inputdrop=',num2str(inputdropout));
-%modelnum = getModelnum(filename);
-
-[nn, L, loss] = nntrain(nn, train_x, train_y, modelnum, opts, 0, 0);
+[nn, L, loss] = nntrain(nn, train_x, train_y, test_x, test_y, modelnum, opts);
 
 [er, bad] = nntest(nn, test_x, test_y);
 
 %save final neural network
-varname = strcat(noise, '_dropout=',num2str(rates),'_inputdrop=',num2str(inputdropout), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
+varname = strcat('../results/', noise, '_', nn.activation_function, '_dropout=',num2str(dropoutRate),'_inputCorrupt=',num2str(inputCorrupt), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
 save(varname,'nn','L','er','bad', 'loss');

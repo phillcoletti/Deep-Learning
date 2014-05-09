@@ -7,7 +7,7 @@ function [nn, L, loss]  = nntrain_connect(nn, train_x, train_y, test_x, test_y, 
 % squared error for each training minibatch.
 
 assert(isfloat(train_x), 'train_x must be a float');
-assert(nargin == 7 || nargin == 9,'number ofinput arguments must be 5 or 7')
+assert(nargin == 7 || nargin == 9,'number ofinput arguments must be 7 or 9')
 
 loss.train.e               = [];
 loss.train.e_frac          = [];
@@ -100,7 +100,7 @@ for k = 1 : length(nn.epochSchedule)
         results_str = ['epoch ' num2str(i) '/' num2str(maxEpochs) '. Took ' num2str(t) 's' '. Mini-batch MSE ' num2str(mean(L((n-numbatches):(n-1)))) str_perf];
         disp(results_str);
 
-        %save final neural network
+        %save intermediate neural network
         if ~mod(i, 200) 
             varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
             save(varname,'nn');

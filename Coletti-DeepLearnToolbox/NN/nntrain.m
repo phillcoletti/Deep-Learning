@@ -1,4 +1,4 @@
-function [nn, L, loss]  = nntrain(nn, train_x, train_y, modelnum, opts, val_x, val_y)
+function [nn, L, loss]  = nntrain(nn, train_x, train_y, test_x, test_y, modelnum, opts, val_x, val_y)
 %NNTRAIN trains a neural net
 % [nn, L] = nnff(nn, x, y, opts) trains the neural network nn with input x and
 % output y for opts.numepochs epochs, with minibatches of size
@@ -7,14 +7,16 @@ function [nn, L, loss]  = nntrain(nn, train_x, train_y, modelnum, opts, val_x, v
 % squared error for each training minibatch.
 
 assert(isfloat(train_x), 'train_x must be a float');
-assert(nargin == 5 || nargin == 7,'number ofinput arguments must be 5 or 7')
+assert(nargin == 7 || nargin == 9,'number ofinput arguments must be 7 or 9')
 
 loss.train.e               = [];
 loss.train.e_frac          = [];
+loss.test.e                = [];
+loss.test.e_frac           = [];
 loss.val.e                 = [];
 loss.val.e_frac            = [];
 opts.validation = 0;
-if nargin == 6
+if nargin == 9
     opts.validation = 1;
 end
 
@@ -24,7 +26,7 @@ if isfield(opts,'plot') && opts.plot == 1
 end
 
 % Write errors to file in case people decide to be mean and shut me down
-fid = fopen(strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputdrop=',num2str(nn.dropoutInput), '_#', num2str(modelnum), '.txt'),'wt');
+fid = fopen(strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '.txt'),'wt');
 
 batchsize = opts.batchsize;
 numepochs = opts.numepochs;
@@ -54,7 +56,23 @@ for i = 1 : numepochs
         
         %Add noise to input (for use in denoising autoencoder)
         if(nn.inputCorruptFraction ~= 0)
-            batch_x = batch_x.*(rand(size(batch_x))>nn.inputZeroMaskedFraction);
+            switch nn.noise 
+                case 'drop'
+                    batch_x = batch_x.*(rand(size(batch_x))>nn.inputCorruptFraction);
+                case 'salt_pepper'
+                    rand_units = rand(size(batch_x));
+                    white_units = rand_units < (nn.inputCorruptFraction / 2);
+                    black_units = (rand_units > (nn.inputCorruptFraction / 2)) & (rand_units < nn.inputCorruptFraction);
+                    batch_x(white_units) = 0;
+                    batch_x(black_units) = 1;
+                case 'random'
+                    rand_units = rand(size(batch_x)) < nn.inputCorruptFraction;
+                    rand_mask = rand(size(batch_x));
+                    batch_x(rand_units) = rand_mask(rand_units);
+                case 'gaussian'
+                    rand_units = rand(size(batch_x)) < nn.inputCorruptFraction;
+                    batch_x = batch_x + (normrnd(0,nn.sigma,size(batch_x)) .* rand_units);
+            end
         end
         
         batch_y = train_y(kk((l - 1) * batchsize + 1 : l * batchsize), :);
@@ -71,28 +89,28 @@ for i = 1 : numepochs
     t = toc;
 
     if opts.validation == 1
-        loss = nneval(nn, loss, train_x, train_y, val_x, val_y);
-        str_perf = sprintf('; Full-batch train mse = %f, val mse = %f', loss.train.e(end), loss.val.e(end));
+        loss = nneval(nn, loss, train_x, train_y, test_x, test_y, val_x, val_y);
+        str_perf = sprintf('; Train mse = %f; Test MSE = %f; Val MSE = %f; Train Err = %f; Test Err = %f; Val Err = %f', loss.train.e(end), loss.test.e(end), loss.val.e(end), loss.train.e_frac(end), loss.test.e_frac(end), loss.val.e_frac(end));
     else
-        loss = nneval(nn, loss, train_x, train_y);
-        str_perf = sprintf('; Full-batch train err = %f', loss.train.e(end));
+        loss = nneval(nn, loss, train_x, train_y, test_x, test_y);
+        str_perf = sprintf('; Train MSE = %f; Test MSE = %f; Train Err = %f; Test Err = %f', loss.train.e(end), loss.test.e(end), loss.train.e_frac(end), loss.test.e_frac(end));
     end
     if ishandle(fhandle)
         nnupdatefigures(nn, fhandle, loss, opts, i);
     end
-    
-    disp(['epoch ' num2str(i) '/' num2str(opts.numepochs) '. Took ' num2str(t) ' seconds' '. Mini-batch mean squared error on training set is ' num2str(mean(L((n-numbatches):(n-1)))) str_perf]);
-    nn.learningRate = nn.learningRate * nn.scaling_learningRate;
-    
-    %save final neural network
-    if ~mod(i, 200) 
-        varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputdrop=',num2str(nn.dropoutInput), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
+
+    results_str = ['epoch ' num2str(i) '/' num2str(numepochs) '. Took ' num2str(t) 's' '. Mini-batch MSE ' num2str(mean(L((n-numbatches):(n-1)))) str_perf];
+    disp(results_str);
+
+    %save intermediate neural network
+    if ~mod(i, 1) 
+        varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '_epochs=', num2str(i), '.mat');
         save(varname,'nn');
     end
-    
+
     % Write training error to file
-    fprintf(fid,'%f\n', loss.train.e(end));
-    
+    fprintf(fid, results_str);
+
 end
 fclose(fid);
 end
