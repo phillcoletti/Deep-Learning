@@ -30,7 +30,7 @@ nn.inputCorruptFraction = inputCorrupt;
 nn.dropoutFraction = dropoutRate;
 nn.activation_function = activation;
 
-[nn, L, loss] = nntrain_connect(nn, train_x, train_y, modelnum, opts, 0, 0);
+[nn, L, loss] = nntrain_connect(nn, train_x, train_y, test_x, test_y, modelnum, opts);
 
 [er, bad] = nntest(nn, test_x, test_y);
 

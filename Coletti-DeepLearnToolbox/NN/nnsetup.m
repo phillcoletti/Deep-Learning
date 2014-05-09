@@ -16,7 +16,7 @@ function nn = nnsetup(architecture)
     nn.inputCorruptFraction             = 0;                %  Used for Denoising AutoEncoders
     nn.dropoutFraction                  = zeros(1,nn.n - 2);%  Dropout level for hidden layers        
     nn.testing                          = 0;                %  Internal variable. nntest sets this to one.
-    nn.output                           = 'sigm';           %  output unit 'sigm' (=logistic), 'softmax' and 'linear'
+    nn.output                           = 'softmax';           %  output unit 'sigm' (=logistic), 'softmax' and 'linear'
 
     %% Dropout training setup (See "Improving neural networks by preventing co-adaptation of feature detectors" by Hinton et al.)
     nn.dropoutTraining                  = 0;                %  Dropout training flag

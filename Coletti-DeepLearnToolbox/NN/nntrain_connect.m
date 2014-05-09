@@ -1,4 +1,4 @@
-function [nn, L, loss]  = nntrain_connect(nn, train_x, train_y, modelnum, opts, val_x, val_y)
+function [nn, L, loss]  = nntrain_connect(nn, train_x, train_y, test_x, test_y, modelnum, opts, val_x, val_y)
 %NNTRAIN trains a neural net
 % [nn, L] = nnff(nn, x, y, opts) trains the neural network nn with input x and
 % output y for opts.numepochs epochs, with minibatches of size
@@ -7,14 +7,16 @@ function [nn, L, loss]  = nntrain_connect(nn, train_x, train_y, modelnum, opts, 
 % squared error for each training minibatch.
 
 assert(isfloat(train_x), 'train_x must be a float');
-assert(nargin == 5 || nargin == 7,'number ofinput arguments must be 5 or 7')
+assert(nargin == 7 || nargin == 9,'number ofinput arguments must be 5 or 7')
 
 loss.train.e               = [];
 loss.train.e_frac          = [];
+loss.test.e                = [];
+loss.test.e_frac           = [];
 loss.val.e                 = [];
 loss.val.e_frac            = [];
 opts.validation = 0;
-if nargin == 6
+if nargin == 9
     opts.validation = 1;
 end
 
@@ -85,17 +87,18 @@ for k = 1 : length(nn.epochSchedule)
         t = toc;
 
         if opts.validation == 1
-            loss = nneval(nn, loss, train_x, train_y, val_x, val_y);
-            str_perf = sprintf('; Full-batch train mse = %f, val mse = %f', loss.train.e(end), loss.val.e(end));
+            loss = nneval(nn, loss, train_x, train_y, test_x, test_y, val_x, val_y);
+            str_perf = sprintf('; Train mse = %f; Test MSE = %f; Val MSE = %f; Train Err = %f; Test Err = %f; Val Err = %f', loss.train.e(end), loss.test.e(end), loss.val.e(end), loss.train.e_frac(end), loss.test.e_frac(end), loss.val.e_frac(end));
         else
-            loss = nneval(nn, loss, train_x, train_y);
-            str_perf = sprintf('; Full-batch train err = %f', loss.train.e(end));
+            loss = nneval(nn, loss, train_x, train_y, test_x, test_y);
+            str_perf = sprintf('; Train MSE = %f; Test MSE = %f; Train Err = %f; Test Err = %f', loss.train.e(end), loss.test.e(end), loss.train.e_frac(end), loss.test.e_frac(end));
         end
         if ishandle(fhandle)
             nnupdatefigures(nn, fhandle, loss, opts, i);
         end
-
-        disp(['epoch ' num2str(i) '/' num2str(maxEpochs) '. Took ' num2str(t) ' seconds' '. Mini-batch mean squared error on training set is ' num2str(mean(L((n-numbatches):(n-1)))) str_perf]);
+        
+        results_str = ['epoch ' num2str(i) '/' num2str(maxEpochs) '. Took ' num2str(t) 's' '. Mini-batch MSE ' num2str(mean(L((n-numbatches):(n-1)))) str_perf];
+        disp(results_str);
 
         %save final neural network
         if ~mod(i, 200) 
@@ -104,7 +107,7 @@ for k = 1 : length(nn.epochSchedule)
         end
 
         % Write training error to file
-        fprintf(fid,'%f\n', loss.train.e(end));
+        fprintf(fid, results_str);
 
     end
     currEpoch = i+1;
