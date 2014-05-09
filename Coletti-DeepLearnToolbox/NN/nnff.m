@@ -23,28 +23,27 @@ function nn = nnff(nn, x, y)
         
         %dropout
         if(nn.dropoutFraction > 0)
-            switch nn.noise 
-                case 'drop'
-                    batch_x = batch_x.*(rand(size(batch_x))>nn.inputCorruptFraction);
-                case 'salt_pepper'
-                    rand_units = rand(size(batch_x));
-                    white_units = rand_units < (nn.inputCorruptFraction / 2);
-                    black_units = (rand_units > (nn.inputCorruptFraction / 2)) & (rand_units < inputCorruptFraction);
-                    batch_x(white_units) = 0;
-                    batch_x(black_units) = 1;
-                case 'random'
-                    rand_units = rand(size(batch_x)) < nn.inputCorruptFraction;
-                    rand_mask = rand(size(batch_x));
-                    batch_x(rand_units) = rand_mask(rand_units);
-                case 'gaussian'
-                    rand_units = rand(size(batch_x)) < inputCorruptFraction;
-                    batch_x = batch_x + (normrnd(0,opts.sigma,size(batch_x)) .* rand_units);
-            end
             if(nn.testing)
-                nn.a{i} = nn.a{i}.*(1 - nn.dropoutFraction);
+                if strcmp(nn.noise,'drop')
+                    nn.a{i} = nn.a{i}.*(1 - nn.dropoutFraction);
+                end
             else
-                nn.dropOutMask{i} = (rand(size(nn.a{i}))>nn.dropoutFraction);
-                nn.a{i} = nn.a{i}.*nn.dropOutMask{i};
+                rand_units = rand(size(nn.a{i}));
+                nn.dropOutMask{i} = rand_units >= nn.dropoutFraction;
+                switch nn.noise 
+                    case 'drop'
+                        nn.a{i} = nn.a{i} .* nn.dropOutMask{i};
+                    case 'salt_pepper'
+                        white_units = rand_units < (nn.dropoutFraction / 2);
+                        black_units = (rand_units >= (nn.dropoutFraction / 2)) & (rand_units < nn.dropoutFraction);
+                        nn.a{i}(white_units) = 0;
+                        nn.a{i}(black_units) = 1;
+                    case 'random'
+                        rand_mask = rand(size(nn.a{i}));
+                        nn.a{i}(~nn.dropOutMask{i}) = rand_mask(~nn.dropOutMask{i});
+                    case 'gaussian'
+                        nn.a{i} = nn.a{i} + (normrnd(0,opts.sigma,size(nn.a{i})) .* ~nn.dropOutMask{i});
+                end
             end
         end
         
