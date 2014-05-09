@@ -58,7 +58,7 @@ for k = 1 : length(nn.epochSchedule)
                     case 'salt_pepper'
                         rand_units = rand(size(batch_x));
                         white_units = rand_units < (nn.inputCorruptFraction / 2);
-                        black_units = (rand_units > (nn.inputCorruptFraction / 2)) & (rand_units < inputCorruptFraction);
+                        black_units = (rand_units > (nn.inputCorruptFraction / 2)) & (rand_units < nn.inputCorruptFraction);
                         batch_x(white_units) = 0;
                         batch_x(black_units) = 1;
                     case 'random'
@@ -66,8 +66,8 @@ for k = 1 : length(nn.epochSchedule)
                         rand_mask = rand(size(batch_x));
                         batch_x(rand_units) = rand_mask(rand_units);
                     case 'gaussian'
-                        rand_units = rand(size(batch_x)) < inputCorruptFraction;
-                        batch_x = batch_x + (normrnd(0,opts.sigma,size(batch_x)) .* rand_units);
+                        rand_units = rand(size(batch_x)) < nn.inputCorruptFraction;
+                        batch_x = batch_x + (normrnd(0,nn.sigma,size(batch_x)) .* rand_units);
                 end
             end
 

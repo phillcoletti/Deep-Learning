@@ -1,4 +1,4 @@
-function [nn, L, loss, er, bad] = test_connect(noise,inputCorrupt,dropoutRate,modelnum)
+function [nn, L, loss, er, bad] = test_connect(noise,inputCorrupt,dropoutRate,activation, modelnum)
 addpath('../data');
 addpath('../util/');
 addpath('../NN/');
@@ -25,8 +25,10 @@ nn.momentum = 0.9;
 opts.batchsize = 100;
 
 nn.noise = noise;
+opts.sigma = .25;
 nn.inputCorruptFraction = inputCorrupt;
 nn.dropoutFraction = dropoutRate;
+nn.activation_function = activation;
 
 [nn, L, loss] = nntrain_connect(nn, train_x, train_y, modelnum, opts, 0, 0);
 
@@ -34,5 +36,5 @@ nn.dropoutFraction = dropoutRate;
 
 %save final neural network
 numepochs = sum(nn.epochSchedule);
-varname = strcat(noise, '_', nn.activation_function, '_dropout=',num2str(dropoutRate),'_inputCorrupt=',num2str(inputCorrupt), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
+varname = strcat('../results/', noise, '_', nn.activation_function, '_dropout=',num2str(dropoutRate),'_inputCorrupt=',num2str(inputCorrupt), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
 save(varname,'nn','L','er','bad', 'loss');

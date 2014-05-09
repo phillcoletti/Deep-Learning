@@ -42,7 +42,7 @@ function nn = nnff(nn, x, y)
                         rand_mask = rand(size(nn.a{i}));
                         nn.a{i}(~nn.dropOutMask{i}) = rand_mask(~nn.dropOutMask{i});
                     case 'gaussian'
-                        nn.a{i} = nn.a{i} + (normrnd(0,opts.sigma,size(nn.a{i})) .* ~nn.dropOutMask{i});
+                        nn.a{i} = nn.a{i} + (normrnd(0,nn.sigma,size(nn.a{i})) .* ~nn.dropOutMask{i});
                 end
             end
         end
