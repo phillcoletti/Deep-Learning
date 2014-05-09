@@ -1,7 +1,8 @@
-function [nn, L, loss, er, bad] = test_dropout_rates(inputdropout,rates,numepochs)
-add_path('../util/');
-add_path('../NN/');
-add_path('../results/');
+function [nn, L, loss, er, bad] = test_dropout(noise,inputdropout,rates,numepochs,modelnum)
+addpath('../data');
+addpath('../util/');
+addpath('../NN/');
+addpath('../results/');
 
 load mnist_uint8;
 
@@ -23,17 +24,18 @@ nn.learningRate = 10;
 nn.scaling_learningRate = 0.998;
 opts.batchsize = 100;
 
+nn.noise = noise;
 nn.dropoutInput = inputdropout;
 nn.dropoutFraction = rates;
 opts.numepochs =  numepochs;                %  Number of full sweeps through data
 
-filename = strcat('../results/', noise, '_dropout=',num2str(rates),'_inputdrop=',num2str(inputdropout));
-modelnum = getModelnum(filename);
+%filename = strcat('../results/', noise, '_dropout=',num2str(rates),'_inputdrop=',num2str(inputdropout));
+%modelnum = getModelnum(filename);
 
-[nn, L, loss] = nntrain(nn, train_x, train_y, opts, 0, 0, modelnum);
+[nn, L, loss] = nntrain(nn, train_x, train_y, modelnum, opts, 0, 0);
 
 [er, bad] = nntest(nn, test_x, test_y);
 
 %save final neural network
-varname = strcat(noise, '_dropout=',num2str(rates),'_inputdrop=',num2str(inputdropout), '_#', modelnum, '_epochs=', num2str(numepochs), '.mat');
+varname = strcat(noise, '_dropout=',num2str(rates),'_inputdrop=',num2str(inputdropout), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
 save(varname,'nn','L','er','bad', 'loss');

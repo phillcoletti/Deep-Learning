@@ -16,7 +16,7 @@ function nn = nnff(nn, x, y)
                 % Calculate the unit's outputs (including the bias term)
                 nn.a{i} = sigm(nn.a{i - 1} * nn.W{i - 1}');
             case 'tanh_opt'
-                nn.a{i} = tanh_opt(nn.a{i - 1} * nn.W{i - 1}');
+                nn.a{i} = tanh_opt(double(nn.a{i - 1}) * nn.W{i - 1}');
             case 'relu'
                 nn.a{i} = relu(nn.a{i - 1} * nn.W{i - 1}');    
         end

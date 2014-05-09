@@ -24,3 +24,5 @@ slprj/
 *.swp
 *.out
 
+#Ignore large network training results
+*epochs*

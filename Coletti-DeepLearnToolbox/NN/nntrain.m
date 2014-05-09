@@ -1,4 +1,4 @@
-function [nn, L, loss]  = nntrain(nn, train_x, train_y, opts, val_x, val_y)
+function [nn, L, loss]  = nntrain(nn, train_x, train_y, modelnum, opts, val_x, val_y)
 %NNTRAIN trains a neural net
 % [nn, L] = nnff(nn, x, y, opts) trains the neural network nn with input x and
 % output y for opts.numepochs epochs, with minibatches of size
@@ -7,7 +7,7 @@ function [nn, L, loss]  = nntrain(nn, train_x, train_y, opts, val_x, val_y)
 % squared error for each training minibatch.
 
 assert(isfloat(train_x), 'train_x must be a float');
-assert(nargin == 4 || nargin == 6,'number ofinput arguments must be 4 or 6')
+assert(nargin == 5 || nargin == 7,'number ofinput arguments must be 5 or 7')
 
 loss.train.e               = [];
 loss.train.e_frac          = [];
@@ -24,15 +24,13 @@ if isfield(opts,'plot') && opts.plot == 1
 end
 
 % Write errors to file in case people decide to be mean and shut me down
-fid = fopen(strcat('nn',num2str(nn.dropoutInput),regexprep(num2str(nn.dropoutFraction),'[^\w'']',''),'.txt'),'wt');
-
-m = size(train_x, 1);
+fid = fopen(strcat('../results/', nn.noise , '_dropout=',num2str(nn.dropoutFraction),'_inputdrop=',num2str(nn.dropoutInput), '_#', num2str(modelnum), '.txt'),'wt');
 
 batchsize = opts.batchsize;
 numepochs = opts.numepochs;
 
+m = size(train_x, 1);
 numbatches = m / batchsize;
-
 assert(rem(numbatches, 1) == 0, 'numbatches must be a integer');
 
 L = zeros(numepochs*numbatches,1);
@@ -83,12 +81,17 @@ for i = 1 : numepochs
         nnupdatefigures(nn, fhandle, loss, opts, i);
     end
     
-    % Write training error to file
-    fprintf(fid,'%f\n', loss.train.e(end));
-    
     disp(['epoch ' num2str(i) '/' num2str(opts.numepochs) '. Took ' num2str(t) ' seconds' '. Mini-batch mean squared error on training set is ' num2str(mean(L((n-numbatches):(n-1)))) str_perf]);
     nn.learningRate = nn.learningRate * nn.scaling_learningRate;
-    %  strcat(noise,'_epochs=', num2str(numepochs), '_dropout=',num2str(rates),'_inputdrop=',num2str(inputdropout),'.mat')
+    
+    %save final neural network
+    if ~mod(i, 200) 
+        varname = strcat('../results/', nn.noise , '_dropout=',num2str(nn.dropoutFraction),'_inputdrop=',num2str(nn.dropoutInput), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
+        save(varname,'nn');
+    end
+    
+    % Write training error to file
+    fprintf(fid,'%f\n', loss.train.e(end));
     
 end
 fclose(fid);
