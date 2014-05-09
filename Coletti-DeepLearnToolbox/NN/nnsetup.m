@@ -13,18 +13,24 @@ function nn = nnsetup(architecture)
     nn.weightPenaltyL2                  = 0;                %  L2 regularization
     nn.nonSparsityPenalty               = 0;                %  Non sparsity penalty
     nn.sparsityTarget                   = 0.05;             %  Sparsity target
-    nn.inputZeroMaskedFraction          = 0;                %  Used for Denoising AutoEncoders
+    nn.inputCorruptFraction             = 0;                %  Used for Denoising AutoEncoders
+    nn.dropoutFraction                  = zeros(1,nn.n - 2);%  Dropout level for hidden layers        
     nn.testing                          = 0;                %  Internal variable. nntest sets this to one.
     nn.output                           = 'sigm';           %  output unit 'sigm' (=logistic), 'softmax' and 'linear'
 
     %% Dropout training setup (See "Improving neural networks by preventing co-adaptation of feature detectors" by Hinton et al.)
     nn.dropoutTraining                  = 0;                %  Dropout training flag
     nn.dropoutInput                     = 0;                %  Dropout level for input layer
-    nn.dropoutFraction                  = zeros(1,nn.n - 2);%  Dropout level for hidden layers        
     nn.initialMomentum                  = 0.5;              %  First value of momentum
     nn.finalMomentum                    = 0.99;             %  Last value of momentum
     nn.endMomentumTime                  = 500;              %  Number of epochs during which momentum increases
     nn.maxSquaredLength                 = 15;               %  Constraint on incoming weight vector
+    
+    %% DropConnect training setup (See Regularization of Neural Networks using DropConnect)
+    nn.connectTraining                  = 0;                %  DropConnect training flag
+%    nn.epochSchedule                    = [600,400,400,20,20,20,20];    %  size of each epoch segment (for different learning rates)
+    nn.epochSchedule                    = [1,1,1,1,1,1,1];    %  toy example for testing
+    nn.learningRateMultiplier           = [1,.5,.1,.05,.01,.005, .001];    % learning rate multiplier
     
     %% Weight initialization
     for i = 2 : nn.n   

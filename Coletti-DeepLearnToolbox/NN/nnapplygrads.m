@@ -10,8 +10,15 @@ function nn = nnapplygrads(nn)
             dW = nn.dW{i};
         end
         
-        dW = nn.learningRate * dW;
-        
+        % for dropConnect paper, learning rate of bias is 2X the learning
+        % rate for other weights
+        if nn.connectTraining
+            dW(:,1) = 2 * nn.learningRate * dW(:,1);
+            dW(:,2:size(dW,2)) = nn.learningRate * dW(:,2:size(dW,2));
+        else
+            dW = nn.learningRate * dW;
+        end
+            
         % Dropout momentum update
         if (nn.dropoutTraining)
             nn.vW{i} = nn.momentum*nn.vW{i} + (1-nn.momentum)*dW; % See Hinton et al

@@ -24,7 +24,7 @@ if isfield(opts,'plot') && opts.plot == 1
 end
 
 % Write errors to file in case people decide to be mean and shut me down
-fid = fopen(strcat('../results/', nn.noise , '_dropout=',num2str(nn.dropoutFraction),'_inputdrop=',num2str(nn.dropoutInput), '_#', num2str(modelnum), '.txt'),'wt');
+fid = fopen(strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputdrop=',num2str(nn.dropoutInput), '_#', num2str(modelnum), '.txt'),'wt');
 
 batchsize = opts.batchsize;
 numepochs = opts.numepochs;
@@ -53,7 +53,7 @@ for i = 1 : numepochs
         batch_x = train_x(kk((l - 1) * batchsize + 1 : l * batchsize), :);
         
         %Add noise to input (for use in denoising autoencoder)
-        if(nn.inputZeroMaskedFraction ~= 0)
+        if(nn.inputCorruptFraction ~= 0)
             batch_x = batch_x.*(rand(size(batch_x))>nn.inputZeroMaskedFraction);
         end
         
@@ -86,7 +86,7 @@ for i = 1 : numepochs
     
     %save final neural network
     if ~mod(i, 200) 
-        varname = strcat('../results/', nn.noise , '_dropout=',num2str(nn.dropoutFraction),'_inputdrop=',num2str(nn.dropoutInput), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
+        varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputdrop=',num2str(nn.dropoutInput), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
         save(varname,'nn');
     end
     
