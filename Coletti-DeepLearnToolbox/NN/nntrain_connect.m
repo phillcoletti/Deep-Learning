@@ -98,8 +98,8 @@ for k = 1 : length(nn.epochSchedule)
         disp(['epoch ' num2str(i) '/' num2str(maxEpochs) '. Took ' num2str(t) ' seconds' '. Mini-batch mean squared error on training set is ' num2str(mean(L((n-numbatches):(n-1)))) str_perf]);
 
         %save final neural network
-        if ~mod(i, 2) 
-            varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorrupt), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
+        if ~mod(i, 200) 
+            varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
             save(varname,'nn');
         end
 
