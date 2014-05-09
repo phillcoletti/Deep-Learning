@@ -99,7 +99,7 @@ for k = 1 : length(nn.epochSchedule)
 
         %save final neural network
         if ~mod(i, 200) 
-            varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorrupt), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
+            varname = strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
             save(varname,'nn');
         end
 
