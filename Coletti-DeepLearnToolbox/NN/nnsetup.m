@@ -1,4 +1,4 @@
-function nn = nnsetup(architecture)
+function nn = nnsetup(architecture, initialization)
 %NNSETUP creates a Feedforward Backpropagate Neural Network
 % nn = nnsetup(architecture) returns an neural network structure with n=numel(architecture)
 % layers, architecture being a n x 1 vector of layer sizes e.g. [784 100 10]
@@ -34,12 +34,48 @@ function nn = nnsetup(architecture)
     nn.sigma                            = 0.25;             % Gaussian distortion
     
     %% Weight initialization
-    for i = 2 : nn.n   
-        % weights and weight momentum
-        nn.W{i - 1} = (rand(nn.size(i), nn.size(i - 1)+1) - 0.5) * 2 * 4 * sqrt(6 / (nn.size(i) + nn.size(i - 1)));
-        nn.vW{i - 1} = zeros(size(nn.W{i - 1}));
+    
+    if strcmp('random', initialization)
+        for i = 2 : nn.n   
+            % weights and weight momentum
+            nn.W{i - 1} = (rand(nn.size(i), nn.size(i - 1)+1) - 0.5) * 2 * 4 * sqrt(6 / (nn.size(i) + nn.size(i - 1)));
+            nn.vW{i - 1} = zeros(size(nn.W{i - 1}));
+            size(nn.W{i-1})
+
+            % average activations (for use with sparsity)
+            nn.p{i}     = zeros(1, nn.size(i));   
+        end
+    elseif strcmp('pretraining', initialization)
+        maxepoch = 1;
+        numhid = nn.size(2);
+        makebatches;
+        [numcases numdims numbatches]=size(batchdata);
         
-        % average activations (for use with sparsity)
-        nn.p{i}     = zeros(1, nn.size(i));   
+        [vishid, hidbiases, visbiases, batchposhidprobs] = rbmf(maxepoch, numhid, batchdata, 1);
+        nn.W{1} = [hidbiases; vishid]'; % check that this is the right format
+        size(nn.W{1}) % DEBUG
+        batchdata = batchposhidprobs;
+        
+        for i = 3:(nn.n - 1)
+            numhid = nn.size(i);
+            [vishid, hidbiases, visbiases, batchposhidprobs] = rbmf(maxepoch, numhid, batchdata, 1);
+            nn.W{i - 1} = [hidbiases; vishid]';
+            size(nn.W{i - 1}) % DEBUG
+            batchdata = batchposhidprobs;
+        end
+        
+        % weights to softmax layer are not pretrained; they're randomly
+        % initialized
+        nn.W{nn.n - 1} = (rand(nn.size(nn.n), nn.size(nn.n - 1)+1) - 0.5) * 2 * 4 * sqrt(6 / (nn.size(nn.n) + nn.size(nn.n - 1)));
+        size(nn.W{nn.n - 1})
+        
+        for i = 2 : nn.n   
+            % weights and weight momentum
+%             nn.W{i - 1} = (rand(nn.size(i), nn.size(i - 1)+1) - 0.5) * 2 * 4 * sqrt(6 / (nn.size(i) + nn.size(i - 1)));
+            nn.vW{i - 1} = zeros(size(nn.W{i - 1}));
+
+            % average activations (for use with sparsity)
+            nn.p{i}     = zeros(1, nn.size(i));   
+        end
     end
 end

@@ -17,7 +17,7 @@ test_x = normalize(test_x, mu, sigma);
 
 %% Neural net with dropout -- trained with parameters from DropConnect paper
 rand('state', 0);
-nn = nnsetup([784 800 800 10]);
+nn = nnsetup([784 800 800 10], 'pretraining');
 
 nn.connectTraining = 1;
 nn.learningRate = .1;
