@@ -68,11 +68,14 @@ function nn = nnff(nn, x, y)
 
     %error and loss
     nn.e = y - nn.a{n};
+%     nn.e(1)
+%     m
     
     switch nn.output
         case {'sigm', 'linear'}
             nn.L = 1/2 * sum(sum(nn.e .^ 2)) / m; 
         case 'softmax'
-            nn.L = -sum(sum(y .* log(nn.a{n}))) / m;
+%             nn.L = -sum(sum(y .* log(nn.a{n}))) / m;
+            nn.L = -sum(sum(y .* log(nn.a{n} + eps))) / m;
     end
 end

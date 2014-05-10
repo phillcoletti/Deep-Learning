@@ -40,7 +40,7 @@ function nn = nnsetup(architecture, initialization)
             % weights and weight momentum
             nn.W{i - 1} = (rand(nn.size(i), nn.size(i - 1)+1) - 0.5) * 2 * 4 * sqrt(6 / (nn.size(i) + nn.size(i - 1)));
             nn.vW{i - 1} = zeros(size(nn.W{i - 1}));
-            size(nn.W{i-1})
+%             size(nn.W{i-1}) % DEBUG
 
             % average activations (for use with sparsity)
             nn.p{i}     = zeros(1, nn.size(i));   
