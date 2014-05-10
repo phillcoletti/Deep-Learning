@@ -32,7 +32,7 @@ else
 end
 
 % Write errors to file in case people decide to be mean and shut me down
-fid = fopen(strcat('../results/', trainingType, '_', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_initialization=', nn.initialization, '_#', num2str(modelnum), '.txt'),'wt');
+fid = fopen(strcat('../results/', trainingType, '_', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '.txt'),'wt');
 
 batchsize = opts.batchsize;
 
@@ -108,7 +108,7 @@ for k = 1 : length(nn.epochSchedule)
 
         %save intermediate neural network
         if ~mod(i, 200) 
-            varname = strcat('../results/', trainingType, '_', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_initialization=', nn.initialization, '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '.mat');
+            varname = strcat('../results/', trainingType, '_', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_initialization=', nn.initialization, '_#', num2str(modelnum), '_epochs=', num2str(i), '.mat');
             save(varname,'nn');
         end
 
