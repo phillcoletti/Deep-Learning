@@ -9,16 +9,21 @@ set(cluster, 'IndependentSubmitFcn', {@independentSubmitFcn, qsubargs});
 % test dropout values
 modelRange = 1:5;
 inputCorruptFraction = 0.2;
-rates = [0.25, 0.5, 0.75];
+rates = [0, 0.25, 0.5, 0.75];
 noises = {'drop','salt_pepper','random','gaussian'};
-numepochs = 3000;
+initializations = {'random', 'pretraining'};
+% numepochs = 3000;
 
 %testing with tanh
-activation = 'tanh_opt';
-for i = 1 : length(noises)
-    for dropoutRate = rates
-        for modelnum = modelRange
-            createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, modelnum});
+activations = {'tanh_opt', 'sigm', 'relu'};
+for activation = activations
+    for noise = noises
+        for dropoutRate = rates
+            for initialization = initializations
+                for modelnum = modelRange
+                    createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, initialization, modelnum});
+                end
+            end
         end
     end
 end
