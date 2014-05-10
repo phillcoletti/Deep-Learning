@@ -16,12 +16,16 @@ initializations = {'random', 'pretraining'};
 
 %testing with tanh
 activations = {'tanh_opt', 'sigm', 'relu'};
-for activation = activations
-    for noise = noises
+for activation_ind = 1:size(activations, 2)
+    for noise_ind = 1:size(noises, 2)
         for dropoutRate = rates
-            for initialization = initializations
+            for initialization_ind = 1:size(initializations, 2)
                 for modelnum = modelRange
+                    activation = activations{activation_ind};
+                    noise = noises{noise_ind};
+                    initialization = initializations{initialization_ind};
                     createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, initialization, modelnum});
+%                     test_connect(noise, inputCorruptFraction, dropoutRate, activation, initialization, modelnum);
                 end
             end
         end

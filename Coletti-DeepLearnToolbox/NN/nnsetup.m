@@ -47,7 +47,7 @@ function nn = nnsetup(architecture, initialization)
             nn.p{i}     = zeros(1, nn.size(i));   
         end
     elseif strcmp('pretraining', initialization)
-        maxepoch = 1;
+        maxepoch = 50;
         numhid = nn.size(2);
         makebatches;
         [numcases numdims numbatches]=size(batchdata);
