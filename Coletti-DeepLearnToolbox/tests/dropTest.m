@@ -10,15 +10,15 @@ set(cluster, 'IndependentSubmitFcn', {@independentSubmitFcn, qsubargs});
 modelRange = 1:5;
 inputCorruptFraction = 0.2;
 rates = [0.25, 0.5, 0.75];
-noises = ['drop','salt_pepper','random','gaussian'];
+noises = {'drop','salt_pepper','random','gaussian'};
 numepochs = 3000;
 
 %testing with tanh
 activation = 'tanh_opt';
-for noise = noises
+for i = 1 : length(noises)
     for dropoutRate = rates
         for modelnum = modelRange
-            createTask(job,@test_dropout,5,{noise, inputCorruptFraction, dropoutRate, activation, numepochs, modelnum});
+            createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, modelnum});
         end
     end
 end
