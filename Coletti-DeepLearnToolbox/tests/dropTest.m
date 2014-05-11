@@ -11,7 +11,7 @@ modelRange = 1:5;
 inputCorruptFraction = 0.2;
 rates = [0, 0.25, 0.5, 0.75];
 noises = {'drop','salt_pepper','random','gaussian'};
-initializations = {'random', 'pretraining'};
+initializations = {'pretraining'};
 % numepochs = 3000;
 
 %testing with tanh
