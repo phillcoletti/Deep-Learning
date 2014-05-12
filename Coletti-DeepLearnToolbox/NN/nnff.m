@@ -2,7 +2,11 @@ function nn = nnff(nn, x, y)
 %NNFF performs a feedforward pass
 % nn = nnff(nn, x, y) returns an neural network structure with updated
 % layer activations, error and loss (nn.a, nn.e and nn.L)
-
+    
+    % get weight adjustment for salt_peppr and random cases
+    % called here instead of in loop
+%     nn = nn_adjust(nn);
+    
     n = nn.n;
     m = size(x, 1);
     
@@ -24,9 +28,15 @@ function nn = nnff(nn, x, y)
         %dropout
         if(nn.dropoutFraction > 0)
             if(nn.testing)
-                if strcmp(nn.noise,'drop')
-                    nn.a{i} = nn.a{i}.*(1 - nn.dropoutFraction);
+                switch nn.noise
+                    case 'drop'
+                        nn.a{i} = nn.a{i}.*(1 - nn.dropoutFraction);
+                    case {'salt_pepper', 'random'}
+                        nn.a{i} = nn.a{i} .* nn.adj{i};
                 end
+%                 if strcmp(nn.noise,'drop')
+%                     nn.a{i} = nn.a{i}.*(1 - nn.dropoutFraction);
+%                 end
             else
                 rand_units = rand(size(nn.a{i}));
                 nn.dropOutMask{i} = rand_units >= nn.dropoutFraction;
