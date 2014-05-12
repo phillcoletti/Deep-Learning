@@ -54,14 +54,14 @@ function nn = nnsetup(architecture, initialization)
         
         [vishid, hidbiases, visbiases, batchposhidprobs] = rbmf(maxepoch, numhid, batchdata, 1);
         nn.W{1} = [hidbiases; vishid]'; % check that this is the right format
-        size(nn.W{1}) % DEBUG
+%         size(nn.W{1}) % DEBUG
         batchdata = batchposhidprobs;
         
         for i = 3:(nn.n - 1)
             numhid = nn.size(i);
             [vishid, hidbiases, visbiases, batchposhidprobs] = rbmf(maxepoch, numhid, batchdata, 1);
             nn.W{i - 1} = [hidbiases; vishid]';
-            size(nn.W{i - 1}) % DEBUG
+%             size(nn.W{i - 1}) % DEBUG
             batchdata = batchposhidprobs;
         end
         

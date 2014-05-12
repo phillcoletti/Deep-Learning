@@ -14,6 +14,7 @@ test_y  = double(test_y);
 % normalize
 [train_x, mu, sigma] = zscore(train_x);
 test_x = normalize(test_x, mu, sigma);
+% test_x
 
 %% Neural net with dropout -- trained with parameters from DropConnect paper
 rand('state', 0);
