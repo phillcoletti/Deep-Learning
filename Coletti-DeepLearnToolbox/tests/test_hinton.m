@@ -2,10 +2,11 @@ function [nn, L, loss, er, bad] = test_hinton(noise,inputCorrupt,dropoutRate,act
 addpath('../data');
 addpath('../util/');
 addpath('../NN/');
+addpath('../NN/Autoencoder_Code');
 addpath('../results/');
 
 % load normalized MNIST data
-loadMNIST();
+[ train_x, train_y, test_x, test_y ] = loadMNIST();
 
 %% Neural net with dropout
 % rand('state',0);
@@ -26,12 +27,13 @@ nn.dropoutFraction = dropoutRate;
 nn.activation_function = activation;
 % 3000 in Hinton paper
 opts.numepochs =  numepochs;                %  Number of full sweeps through data
+% opts.validation = 0;
 
-[nn, L, loss] = nntrain(nn, train_x, train_y, modelnum, opts, 0, 0);
+[nn, L, loss] = nntrain(nn, train_x, train_y, test_x, test_y, modelnum, opts);
 
 [er, bad] = nntest(nn, test_x, test_y);
 
 %save final neural network
 
-varname = strcat('../results/', 'hinton_', noise, '_', nn.activation_function, '_dropout=',num2str(dropoutRate),'_inputCorrupt=',num2str(inputCorrupt), '_initialization=', initialization, '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
+varname = strcat('../results3/', 'hinton_', noise, '_', nn.activation_function, '_dropout=',num2str(dropoutRate),'_inputCorrupt=',num2str(inputCorrupt), '_initialization=', initialization, '_#', num2str(modelnum), '_epochs=', num2str(numepochs), '_FINAL.mat');
 save(varname,'nn','L','er','bad', 'loss');

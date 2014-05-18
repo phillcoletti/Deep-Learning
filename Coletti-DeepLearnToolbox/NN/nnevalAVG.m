@@ -1,4 +1,4 @@
-function [loss] = nnevalAVG(nn, loss, train_x, train_y, test_x, test_y, val_x, val_y, N)
+function [loss] = nnevalAVG(nn, loss, train_x, train_y, test_x, test_y, N, val_x, val_y)
 %NNEVAL evaluates performance of neural network
 % Returns a updated loss struct
 assert(nargin == 7 || nargin == 9, 'Wrong number of arguments');

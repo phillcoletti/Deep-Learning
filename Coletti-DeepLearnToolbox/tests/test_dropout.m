@@ -2,6 +2,7 @@ function [nn, L, loss, er, bad] = test_dropout(noise,inputCorrupt,dropoutRate,ac
 addpath('../data');
 addpath('../util/');
 addpath('../NN/');
+addpath('../NN/Autoencoder_Code');
 addpath('../results/');
 
 load mnist_uint8;

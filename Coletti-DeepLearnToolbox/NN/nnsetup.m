@@ -52,10 +52,17 @@ function nn = nnsetup(architecture, initialization)
         numhid = nn.size(2);
         makebatches;
         [numcases numdims numbatches]=size(batchdata);
+%         size(batchdata, 3)
+%         max(max(max(batchdata)))
+%         min(min(min(batchdata)))
+%         mean(mean(mean(batchdata)))
+%         batchdata = normalize01(batchdata);
+        
         
         [vishid, hidbiases, visbiases, batchposhidprobs] = rbmf(maxepoch, numhid, batchdata, 1);
         nn.W{1} = [hidbiases; vishid]'; % check that this is the right format
 %         size(nn.W{1}) % DEBUG
+%         save('vishid2.mat', 'vishid');
         batchdata = batchposhidprobs;
         
         for i = 3:(nn.n - 1)
@@ -79,5 +86,8 @@ function nn = nnsetup(architecture, initialization)
             % average activations (for use with sparsity)
             nn.p{i}     = zeros(1, nn.size(i));   
         end
+        
+        rng('default');
+        rng shuffle;
     end
 end

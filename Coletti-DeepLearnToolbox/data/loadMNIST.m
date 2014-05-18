@@ -13,7 +13,9 @@ load mnist_uint8;
 % [train_x, mu, sigma] = zscore(train_x);
 % test_x = normalize(test_x, mu, sigma);
 
-train_x = normalize01(train_x);
-test_x = normalize01(test_x);
+train_x = normalize01(double(train_x));
+test_x = normalize01(double(test_x));
+train_y = double(train_y);
+test_y = double(test_y);
 
 end
