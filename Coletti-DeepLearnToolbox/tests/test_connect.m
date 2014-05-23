@@ -3,6 +3,7 @@ addpath('../data');
 addpath('../util/');
 addpath('../NN/');
 addpath('../results/');
+addpath('../NN/Autoencoder_Code/')
 
 load mnist_uint8;
 
