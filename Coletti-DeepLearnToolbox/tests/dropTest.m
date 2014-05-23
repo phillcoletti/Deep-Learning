@@ -1,3 +1,5 @@
+% addpath('../NN/Autoencoder_Code/');
+
 % get a cluster handle and a job
 cluster = parcluster('anthill');
 job = createJob(cluster);
@@ -9,13 +11,13 @@ set(cluster, 'IndependentSubmitFcn', {@independentSubmitFcn, qsubargs});
 % test dropout values
 modelRange = 1:5;
 inputCorruptFraction = 0.2;
-rates = [0, 0.25, 0.5, 0.75];
-noises = {'drop','salt_pepper','random','gaussian'};
-initializations = {'pretraining'};
-% numepochs = 3000;
+rates = [0, 0.4, 0.5, 0.6, 0.7];
+noises = {'drop','salt_pepper','random'};
+initializations = {'random', 'pretraining'};
+numepochs = 3000;
 
 %testing with tanh
-activations = {'tanh_opt', 'sigm', 'relu'};
+activations = {'tanh_opt', 'sigm'};
 for activation_ind = 1:size(activations, 2)
     for noise_ind = 1:size(noises, 2)
         for dropoutRate = rates
@@ -25,7 +27,7 @@ for activation_ind = 1:size(activations, 2)
                     noise = noises{noise_ind};
                     initialization = initializations{initialization_ind};
                     createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, initialization, modelnum});
-%                     test_connect(noise, inputCorruptFraction, dropoutRate, activation, initialization, modelnum);
+%                     test_hinton(noise, inputCorruptFraction, dropoutRate, activation, initialization, numepochs, modelnum);
                 end
             end
         end

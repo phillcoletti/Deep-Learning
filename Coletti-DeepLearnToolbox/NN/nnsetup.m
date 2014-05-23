@@ -18,7 +18,8 @@ function nn = nnsetup(architecture, initialization)
     nn.testing                          = 0;                %  Internal variable. nntest sets this to one.
     nn.output                           = 'softmax';           %  output unit 'sigm' (=logistic), 'softmax' and 'linear'
     nn.initialization                   = initialization; % random or pretraining
-    
+    nn.numPredict                       = 50;              % Number of runs for testing
+
     %% Dropout training setup (See "Improving neural networks by preventing co-adaptation of feature detectors" by Hinton et al.)
     nn.dropoutTraining                  = 0;                %  Dropout training flag
     nn.dropoutInput                     = 0;                %  Dropout level for input layer
@@ -51,17 +52,24 @@ function nn = nnsetup(architecture, initialization)
         numhid = nn.size(2);
         makebatches;
         [numcases numdims numbatches]=size(batchdata);
+%         size(batchdata, 3)
+%         max(max(max(batchdata)))
+%         min(min(min(batchdata)))
+%         mean(mean(mean(batchdata)))
+%         batchdata = normalize01(batchdata);
+        
         
         [vishid, hidbiases, visbiases, batchposhidprobs] = rbmf(maxepoch, numhid, batchdata, 1);
         nn.W{1} = [hidbiases; vishid]'; % check that this is the right format
-        size(nn.W{1}) % DEBUG
+%         size(nn.W{1}) % DEBUG
+%         save('vishid2.mat', 'vishid');
         batchdata = batchposhidprobs;
         
         for i = 3:(nn.n - 1)
             numhid = nn.size(i);
             [vishid, hidbiases, visbiases, batchposhidprobs] = rbmf(maxepoch, numhid, batchdata, 1);
             nn.W{i - 1} = [hidbiases; vishid]';
-            size(nn.W{i - 1}) % DEBUG
+%             size(nn.W{i - 1}) % DEBUG
             batchdata = batchposhidprobs;
         end
         
@@ -78,5 +86,8 @@ function nn = nnsetup(architecture, initialization)
             % average activations (for use with sparsity)
             nn.p{i}     = zeros(1, nn.size(i));   
         end
+        
+        rng('default');
+        rng shuffle;
     end
 end

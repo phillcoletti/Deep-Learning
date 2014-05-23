@@ -2,7 +2,11 @@ function nn = nnff(nn, x, y)
 %NNFF performs a feedforward pass
 % nn = nnff(nn, x, y) returns an neural network structure with updated
 % layer activations, error and loss (nn.a, nn.e and nn.L)
-
+    
+    % get weight adjustment for salt_peppr and random cases
+    % called here instead of in loop
+%     nn = nn_adjust(nn);
+    
     n = nn.n;
     m = size(x, 1);
     
@@ -24,26 +28,34 @@ function nn = nnff(nn, x, y)
         %dropout
         if(nn.dropoutFraction > 0)
             if(nn.testing)
-                if strcmp(nn.noise,'drop')
-                    nn.a{i} = nn.a{i}.*(1 - nn.dropoutFraction);
-                end
-            else
-                rand_units = rand(size(nn.a{i}));
-                nn.dropOutMask{i} = rand_units >= nn.dropoutFraction;
-                switch nn.noise 
+                switch nn.noise
                     case 'drop'
-                        nn.a{i} = nn.a{i} .* nn.dropOutMask{i};
-                    case 'salt_pepper'
-                        white_units = rand_units < (nn.dropoutFraction / 2);
-                        black_units = (rand_units >= (nn.dropoutFraction / 2)) & (rand_units < nn.dropoutFraction);
-                        nn.a{i}(white_units) = 0;
-                        nn.a{i}(black_units) = 1;
-                    case 'random'
-                        rand_mask = rand(size(nn.a{i}));
-                        nn.a{i}(~nn.dropOutMask{i}) = rand_mask(~nn.dropOutMask{i});
-                    case 'gaussian'
-                        nn.a{i} = nn.a{i} + (normrnd(0,nn.sigma,size(nn.a{i})) .* ~nn.dropOutMask{i});
+                        nn.a{i} = nn.a{i} * (1 - nn.dropoutFraction);
+                    case {'salt_pepper', 'random'}
+                        nn.a{i} = nn.a{i} * nn.adj(i);
                 end
+%                 if strcmp(nn.noise,'drop')
+%                     nn.a{i} = nn.a{i}.*(1 - nn.dropoutFraction);
+%                 end
+            else
+%                if ~(nn.adjusting)
+                    rand_units = rand(size(nn.a{i}));
+                    nn.dropOutMask{i} = rand_units >= nn.dropoutFraction;
+                    switch nn.noise 
+                        case 'drop'
+                            nn.a{i} = nn.a{i} .* nn.dropOutMask{i};
+                        case 'salt_pepper'
+                            white_units = rand_units < (nn.dropoutFraction / 2);
+                            black_units = (rand_units >= (nn.dropoutFraction / 2)) & (rand_units < nn.dropoutFraction);
+                            nn.a{i}(white_units) = 0;
+                            nn.a{i}(black_units) = 1;
+                        case 'random'
+                            rand_mask = rand(size(nn.a{i}));
+                            nn.a{i}(~nn.dropOutMask{i}) = rand_mask(~nn.dropOutMask{i});
+                        case 'gaussian'
+                            nn.a{i} = nn.a{i} + (normrnd(0,nn.sigma,size(nn.a{i})) .* ~nn.dropOutMask{i});
+                    end
+%                end
             end
         end
         
