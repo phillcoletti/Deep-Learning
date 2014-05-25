@@ -96,7 +96,7 @@ for i = 1 : numepochs
     
     t = toc;
 
-    if ~mod(i, 30)
+    if ~mod(i, 1)
         if opts.validation == 1
             loss = nnevalAVG(nn, loss, train_x, train_y, test_x, test_y, val_x, val_y, nn.numPredict);
             str_perf = sprintf('; Train mse = %f; Test MSE = %f; Val MSE = %f; Train Err = %f; Test Err = %f; Val Err = %f', loss.train.e(end), loss.test.e(end), loss.val.e(end), loss.train.e_frac(end), loss.test.e_frac(end), loss.val.e_frac(end));

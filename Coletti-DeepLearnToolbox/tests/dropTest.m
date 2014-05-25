@@ -26,7 +26,7 @@ for activation_ind = 1:size(activations, 2)
                     activation = activations{activation_ind};
                     noise = noises{noise_ind};
                     initialization = initializations{initialization_ind};
-                    createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, initialization, modelnum});
+                    createTask(job,@test_connect,5,{noise, inputCorruptFraction, dropoutRate, activation, initialization, numepochs, modelnum});
 %                     test_hinton(noise, inputCorruptFraction, dropoutRate, activation, initialization, numepochs, modelnum);
                 end
             end
