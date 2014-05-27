@@ -1,4 +1,4 @@
-function r=visualize(X, mm, s1, s2)
+function r=visualize(X, s1, s2)
 %FROM RBMLIB http://code.google.com/p/matrbm/
 %Visualize weights X. If the function is called as a void method,
 %it does the plotting. But if the function is assigned to a variable 

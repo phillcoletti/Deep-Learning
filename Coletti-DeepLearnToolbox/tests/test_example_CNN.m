@@ -1,4 +1,4 @@
-function [ err, bad, cnn ] = test_example_CNN( )
+function [ er, bad, cnn ] = test_example_CNN( )
 addpath('../data');
 addpath('../util/');
 addpath('../NN/');
@@ -36,13 +36,16 @@ cnn.layers = {
 
 opts.alpha = 1;
 opts.batchsize = 50;
-opts.numepochs = 1;
+opts.numepochs = 200;
 
 cnn = cnnsetup(cnn, train_x, train_y);
 cnn = cnntrain(cnn, train_x, train_y, opts);
 
 [er, bad] = cnntest(cnn, test_x, test_y);
+cnn.er = er;
+cnn.bad = bad;
+save('MNIST_CNN.mat', 'cnn');
 
 %plot mean squared error
-figure; plot(cnn.rL);
-assert(er<0.12, 'Too big error');
+% figure; plot(cnn.rL);
+% assert(er<0.12, 'Too big error');
