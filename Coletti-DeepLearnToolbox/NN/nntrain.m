@@ -41,9 +41,14 @@ m = size(train_x, 1);
 numbatches = m / batchsize;
 assert(rem(numbatches, 1) == 0, 'numbatches must be a integer');
 
+corruptions = {'drop', 'salt_pepper', 'random'};
 L = zeros(numepochs*numbatches,1);
 n = 1;
 for i = 1 : numepochs
+    
+    if (nn.randCorruption)
+        nn.noise = corruptions{ randi([1, 3]) };
+    end
     
     % Dropout training: update momentum and learning rate
     if (nn.dropoutTraining)
@@ -96,7 +101,7 @@ for i = 1 : numepochs
     
     t = toc;
 
-    if ~mod(i, 30)
+    if ~mod(i, 1)
         if opts.validation == 1
             loss = nnevalAVG(nn, loss, train_x, train_y, test_x, test_y, val_x, val_y, nn.numPredict);
             str_perf = sprintf('; Train mse = %f; Test MSE = %f; Val MSE = %f; Train Err = %f; Test Err = %f; Val Err = %f', loss.train.e(end), loss.test.e(end), loss.val.e(end), loss.train.e_frac(end), loss.test.e_frac(end), loss.val.e_frac(end));
@@ -117,7 +122,10 @@ for i = 1 : numepochs
 
 
     %save intermediate neural network
-    if ~mod(i, 200) 
+    if ~mod(i, 200)
+        if (nn.randCorruption)
+            nn.noise = 'randCorrupt';
+        end
         varname = strcat('../results3/', trainingType, '_', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_initialization=', nn.initialization, '_#', num2str(modelnum), '_epochs=', num2str(i), '.mat');
         save(varname,'nn');
     end

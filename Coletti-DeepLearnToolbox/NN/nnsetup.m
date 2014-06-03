@@ -18,7 +18,7 @@ function nn = nnsetup(architecture, initialization)
     nn.testing                          = 0;                %  Internal variable. nntest sets this to one.
     nn.output                           = 'softmax';           %  output unit 'sigm' (=logistic), 'softmax' and 'linear'
     nn.initialization                   = initialization; % random or pretraining
-    nn.numPredict                       = 50;              % Number of runs for testing
+    nn.numPredict                       = 1;              % Number of runs for testing
 
     %% Dropout training setup (See "Improving neural networks by preventing co-adaptation of feature detectors" by Hinton et al.)
     nn.dropoutTraining                  = 0;                %  Dropout training flag

@@ -13,6 +13,11 @@ addpath('../results/');
 rng shuffle;
 nn = nnsetup([784 800 800 10], initialization);
 
+nn.randCorruption = 0;
+if strcmp(noise, 'randCorrupt')
+   nn.randCorruption = 1; 
+end
+
 % nn.initialization = initialization;
 nn.dropoutTraining = 1;
 nn.connectTraining = 0;
