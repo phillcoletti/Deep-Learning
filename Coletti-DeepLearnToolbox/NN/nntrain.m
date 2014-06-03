@@ -32,7 +32,7 @@ else
 end
 
 % Write errors to file in case people decide to be mean and shut me down
-fid = fopen(strcat('../results/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '.txt'),'wt');
+fid = fopen(strcat('../results3/', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_initialization=', nn.initialization, '_#', num2str(modelnum), '.txt'),'wt');
 
 batchsize = opts.batchsize;
 numepochs = opts.numepochs;
@@ -41,17 +41,24 @@ m = size(train_x, 1);
 numbatches = m / batchsize;
 assert(rem(numbatches, 1) == 0, 'numbatches must be a integer');
 
+corruptions = {'drop', 'salt_pepper', 'random'};
 L = zeros(numepochs*numbatches,1);
 n = 1;
 for i = 1 : numepochs
     
-    % Dropout training: update momentum
+    if (nn.randCorruption)
+        nn.noise = corruptions{ randi([1, 3]) };
+    end
+    
+    % Dropout training: update momentum and learning rate
     if (nn.dropoutTraining)
         if i < nn.endMomentumTime
             nn.momentum = (1-i/(nn.endMomentumTime))*nn.initialMomentum + i/(nn.endMomentumTime)*nn.finalMomentum;
         else
             nn.momentum = nn.finalMomentum;
         end
+
+        nn.learningRate = nn.learningRate * nn.scaling_learningRate;
     end
     
     tic;
@@ -94,28 +101,34 @@ for i = 1 : numepochs
     
     t = toc;
 
-    if opts.validation == 1
-        loss = nneval(nn, loss, train_x, train_y, test_x, test_y, val_x, val_y);
-        str_perf = sprintf('; Train mse = %f; Test MSE = %f; Val MSE = %f; Train Err = %f; Test Err = %f; Val Err = %f', loss.train.e(end), loss.test.e(end), loss.val.e(end), loss.train.e_frac(end), loss.test.e_frac(end), loss.val.e_frac(end));
-    else
-        loss = nneval(nn, loss, train_x, train_y, test_x, test_y);
-        str_perf = sprintf('; Train MSE = %f; Test MSE = %f; Train Err = %f; Test Err = %f', loss.train.e(end), loss.test.e(end), loss.train.e_frac(end), loss.test.e_frac(end));
-    end
-    if ishandle(fhandle)
-        nnupdatefigures(nn, fhandle, loss, opts, i);
+    if ~mod(i, 1)
+        if opts.validation == 1
+            loss = nnevalAVG(nn, loss, train_x, train_y, test_x, test_y, val_x, val_y, nn.numPredict);
+            str_perf = sprintf('; Train mse = %f; Test MSE = %f; Val MSE = %f; Train Err = %f; Test Err = %f; Val Err = %f', loss.train.e(end), loss.test.e(end), loss.val.e(end), loss.train.e_frac(end), loss.test.e_frac(end), loss.val.e_frac(end));
+        else
+            loss = nnevalAVG(nn, loss, train_x, train_y, test_x, test_y, nn.numPredict);
+            str_perf = sprintf('; Train MSE = %f; Test MSE = %f; Train Err = %f; Test Err = %f', loss.train.e(end), loss.test.e(end), loss.train.e_frac(end), loss.test.e_frac(end));
+        end
+        if ishandle(fhandle)
+            nnupdatefigures(nn, fhandle, loss, opts, i);
+        end
+
+        results_str = ['epoch ' num2str(i) '/' num2str(numepochs) '. Took ' num2str(t) 's' '. Mini-batch MSE ' num2str(mean(L((n-numbatches):(n-1)))) str_perf '\n'];
+        disp(results_str);
+
+        % Write training error to file
+        fprintf(fid, results_str);
     end
 
-    results_str = ['epoch ' num2str(i) '/' num2str(numepochs) '. Took ' num2str(t) 's' '. Mini-batch MSE ' num2str(mean(L((n-numbatches):(n-1)))) str_perf '\n'];
-    disp(results_str);
 
     %save intermediate neural network
-    if ~mod(i, 200) 
-        varname = strcat('../results/', trainingType, '_', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_#', num2str(modelnum), '_epochs=', num2str(i), '.mat');
+    if ~mod(i, 200)
+        if (nn.randCorruption)
+            nn.noise = 'randCorrupt';
+        end
+        varname = strcat('../results3/', trainingType, '_', nn.noise , '_', nn.activation_function, '_dropout=',num2str(nn.dropoutFraction),'_inputCorrupt=',num2str(nn.inputCorruptFraction), '_initialization=', nn.initialization, '_#', num2str(modelnum), '_epochs=', num2str(i), '.mat');
         save(varname,'nn');
     end
-
-    % Write training error to file
-    fprintf(fid, results_str);
 
 end
 fclose(fid);

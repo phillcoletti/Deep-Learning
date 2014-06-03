@@ -24,7 +24,7 @@ I = zeros(231);
 
 for i = 1:64
 %     I = vec2mat(W(i,:), 28);
-    F = reshape(W(IDX(i),:), [28 28]);
+    F = reshape(W(IDX(192+i),:), [28 28]);
     row = ceil(i/8);
     col = mod(i, 8);
     I_row = (row - 1) * 29 + 1;

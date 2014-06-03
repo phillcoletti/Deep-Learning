@@ -12,7 +12,15 @@ function nn = nnff(nn, x, y)
     
     x = [ones(m,1) x];
     nn.a{1} = x;
-
+    
+    % HANH CODE
+    %dropout for input layer
+%     if ~(nn.testing)
+%         nn.dropOutMask{1} = (rand(size(nn.a{1}))>nn.dropoutInput);
+%         nn.a{1} = x.*nn.dropOutMask{1};
+%     end
+    
+    
     %feedforward pass
     for i = 2 : n-1
         switch nn.activation_function 

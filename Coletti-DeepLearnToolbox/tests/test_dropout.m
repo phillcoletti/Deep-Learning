@@ -2,6 +2,7 @@ function [nn, L, loss, er, bad] = test_dropout(noise,inputCorrupt,dropoutRate,ac
 addpath('../data');
 addpath('../util/');
 addpath('../NN/');
+addpath('../NN/Autoencoder_Code');
 addpath('../results/');
 
 load mnist_uint8;
@@ -16,7 +17,7 @@ test_y  = double(test_y);
 test_x = normalize(test_x, mu, sigma);
 
 %% Neural net with dropout
-rand('state',0);
+% rand('state',0);
 nn = nnsetup([784 800 800 10]);
 
 nn.dropoutTraining = 1;
