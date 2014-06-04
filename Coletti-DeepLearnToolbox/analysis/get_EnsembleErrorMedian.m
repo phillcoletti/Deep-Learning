@@ -5,7 +5,7 @@ function [ ensembleError, noises, corruptionRates ] = get_EnsembleErrorMedian( d
 initializations = {'pretraining', 'random'};
 activation = 'tanh_opt';
 inputCorruptFraction = 0.2;
-noises = {'drop', 'salt_pepper', 'random'};
+noises = {'drop', 'salt_pepper', 'random', 'mixed'};
 corruptionRates = [0.4, 0.5, 0.6, 0.7];
 dim = {'Corruption Rate', 'Noise', 'Ensemble Size'};
 

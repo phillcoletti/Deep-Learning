@@ -7,7 +7,7 @@ activation = 'tanh_opt';
 inputCorruptFraction = 0.2;
 noises = {'drop', 'salt_pepper', 'random'};
 corruptionRates = [0.4, 0.5, 0.6, 0.7];
-dim = {'Corruption Rate', 'Noise', 'Ensemble Size'};
+dim = {'Corruption Rate', 'Noise', 'Ensemble Size', 'mixed'};
 
 [~, expected] = max(y,[],2);
 

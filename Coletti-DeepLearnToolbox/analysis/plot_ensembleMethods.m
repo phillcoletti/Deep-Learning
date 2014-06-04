@@ -1,5 +1,6 @@
 addpath('../data/')
 
+clear all
 close all
 %retrieve data
 [ train_x, train_y, test_x, test_y ] = loadMNIST(  );
@@ -8,9 +9,9 @@ close all
 ensembleErrors{2} = get_EnsembleErrorMean('../results/',test_y);
 ensembleErrors{3} = get_EnsembleErrorMin('../results/',test_y);
 ensembleErrors{4} = get_EnsembleErrorMax('../results/',test_y);
-%ensembleErrorMedian = get_EnsembleErrorMedian('../results/',test_y);
-ensembleErrors{5} = ensembleError;
-methods = {'Product','Mean', 'Min', 'Max', 'Median'};
+%ensembleErrors{5} = get_EnsembleErrorMedian('../results/',test_y);
+
+methods = {'Product','Mean', 'Min', 'Max'};
 
 for i = 1 : length(noises)
     noise = noises{i};
